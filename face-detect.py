@@ -1,4 +1,8 @@
 #
+# Python and OpenCV 2.0 face detection
+#
+# Detects face(s) visible to a webcam using a bright green border
+#
 # This code is very heavily based on code from:
 # http://blog.jozilla.net/2008/06/27/fun-with-python-opencv-and-face-detection/
 #
@@ -49,7 +53,7 @@ if __name__ == "__main__":
     device = 0 # assume we want first device
     capture = cv.CaptureFromCAM(0)
     cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH, 640)
-    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 480)    
+    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
 
     # check if capture device is OK
     if not capture:
