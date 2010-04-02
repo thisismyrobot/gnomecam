@@ -1,5 +1,5 @@
 #
-# Python and OpenCV 2.0 face detection
+# Python 2.6 and OpenCV 2.0 face detection
 #
 # Detects face(s) visible to a webcam using a bright green border
 #
@@ -10,6 +10,9 @@
 #
 # This code requires OpenCV 2.0 - very very good instructions available here:
 # http://subsumption.blogspot.com/2010/02/these-are-instructions-i-used-to.html
+#
+# Finally, you need the Haar casade file:
+# http://eclecti.cc/files/2008/03/haarcascade_frontalface_alt.xml
 #
 
 import sys
