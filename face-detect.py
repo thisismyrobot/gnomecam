@@ -1,4 +1,12 @@
-#based on http://blog.jozilla.net/2008/06/27/fun-with-python-opencv-and-face-detection/
+#
+# This code is very heavily based on code from:
+# http://blog.jozilla.net/2008/06/27/fun-with-python-opencv-and-face-detection/
+#
+# The code has been updated to work with OpenCV 2.0 and its new python bindings.
+#
+# This code requires OpenCV 2.0 - very very good instructions available here:
+# http://subsumption.blogspot.com/2010/02/these-are-instructions-i-used-to.html
+#
 
 import sys
 import cv
