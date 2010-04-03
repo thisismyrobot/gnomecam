@@ -17,6 +17,9 @@ import cv
 import serial
 
 
+LAST_DIRECTION = None
+SCAN_SPEED = 1
+
 def filterfaces(faces):
     filtered = [face for face in faces if face[0][2] > 50 and face[0][3] > 50]
     if len(filtered) > 0:
@@ -68,9 +71,19 @@ if __name__ == "__main__":
             offset = face_center[0] - (cv.GetSize(frame)[0]/2)
             if abs(offset) > 5:
                 serialpos = serialpos + (float(offset)/50)
-                # +/- 72
-                if serialpos > 200:
-                    serialpos = 200
-                if serialpos < 54:
-                    serialpos = 54
-                conn.write(chr(int(255))+chr(int(0))+chr(int(serialpos)))
+                if offset > 0:
+                    LAST_DIRECTION = SCAN_SPEED
+                else:
+                    LAST_DIRECTION = -SCAN_SPEED
+            else:
+                LAST_DIRECTION = None
+        else:
+            if LAST_DIRECTION:
+                serialpos += LAST_DIRECTION
+        if serialpos > 200:
+            serialpos = 200
+            LAST_DIRECTION = -LAST_DIRECTION
+        if serialpos < 54:
+            serialpos = 54
+            LAST_DIRECTION = -LAST_DIRECTION
+        conn.write(chr(int(255))+chr(int(0))+chr(int(serialpos)))
