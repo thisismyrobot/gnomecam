@@ -42,9 +42,7 @@ def detect(image):
                      3,
                      8,
                      0)
-        print face
         center = (face[0][0] + (face[0][2]*0.5), face[0][1] + (face[0][3]*0.5))
-        print center
         return center
 
 if __name__ == "__main__":
@@ -68,13 +66,14 @@ if __name__ == "__main__":
         face_center = detect(frame)
         if face_center:
             offset = face_center[0] - (cv.GetSize(frame)[0]/2)
-            serialpos = serialpos + (float(offset)/50)
-            # +/- 72
-            if serialpos > 200:
-                serialpos = 200
-            if serialpos < 54:
-                serialpos = 54
-            conn.write(chr(int(255))+chr(int(0))+chr(int(serialpos)))
+            if abs(offset) > 3:
+                serialpos = serialpos + (float(offset)/50)
+                # +/- 72
+                if serialpos > 200:
+                    serialpos = 200
+                if serialpos < 54:
+                    serialpos = 54
+                conn.write(chr(int(255))+chr(int(0))+chr(int(serialpos)))
         cv.ShowImage('Camera', frame)
         k = cv.WaitKey(5)
         if k == 0x1b: # ESC
