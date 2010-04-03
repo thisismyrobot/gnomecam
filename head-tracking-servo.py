@@ -66,7 +66,7 @@ if __name__ == "__main__":
         face_center = detect(frame)
         if face_center:
             offset = face_center[0] - (cv.GetSize(frame)[0]/2)
-            if abs(offset) > 3:
+            if abs(offset) > 5:
                 serialpos = serialpos + (float(offset)/50)
                 # +/- 72
                 if serialpos > 200:
@@ -74,7 +74,3 @@ if __name__ == "__main__":
                 if serialpos < 54:
                     serialpos = 54
                 conn.write(chr(int(255))+chr(int(0))+chr(int(serialpos)))
-        cv.ShowImage('Camera', frame)
-        k = cv.WaitKey(5)
-        if k == 0x1b: # ESC
-            break
