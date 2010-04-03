@@ -42,12 +42,19 @@ def detect(image):
                      3,
                      8,
                      0)
+        print face
+        center = (face[0][0] + (face[0][2]*0.5), face[0][1] + (face[0][3]*0.5))
+        print center
+        return center
 
 if __name__ == "__main__":
+    serialpos = 127
+    conn = serial.Serial("/dev/ttyUSB0", 9600, timeout=0)
+    conn.write(chr(int(255))+chr(int(0))+chr(int(127)))
     cv.NamedWindow('Camera', cv.CV_WINDOW_AUTOSIZE)
     capture = cv.CaptureFromCAM(0)
-    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH, 640)
-    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
+    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
 
     if not capture:
         print "Error opening capture device"
@@ -58,10 +65,17 @@ if __name__ == "__main__":
         if frame is None:
             break
         cv.Flip(frame, None, 1)
-        face_y = detect(frame)
-        if face_y:
-            print "a face was found"
+        face_center = detect(frame)
+        if face_center:
+            offset = face_center[0] - (cv.GetSize(frame)[0]/2)
+            serialpos = serialpos + (float(offset)/50)
+            # +/- 72
+            if serialpos > 200:
+                serialpos = 200
+            if serialpos < 54:
+                serialpos = 54
+            conn.write(chr(int(255))+chr(int(0))+chr(int(serialpos)))
         cv.ShowImage('Camera', frame)
-        k = cv.WaitKey(10)
+        k = cv.WaitKey(5)
         if k == 0x1b: # ESC
             break
