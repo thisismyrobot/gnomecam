@@ -32,6 +32,9 @@ def detect(image):
     # equalize histogram
     cv.EqualizeHist(grayscale, grayscale)
 
+    # show processed image
+    cv.ShowImage('Processed', grayscale)
+
     # detect objects
     cascade = cv.Load('haarcascade_frontalface_alt.xml')
     faces = cv.HaarDetectObjects(grayscale, cascade, storage, 1.2, 2, cv.CV_HAAR_DO_CANNY_PRUNING)
@@ -46,11 +49,13 @@ def detect(image):
                          8,
                          0)
 
+
 if __name__ == "__main__":
     print "Press ESC to exit ..."
 
     # create windows
-    cv.NamedWindow('Camera', cv.CV_WINDOW_AUTOSIZE)
+    cv.NamedWindow('Raw', cv.CV_WINDOW_AUTOSIZE)
+    cv.NamedWindow('Processed', cv.CV_WINDOW_AUTOSIZE)
 
     # create capture device
     device = 0 # assume we want first device
@@ -78,7 +83,7 @@ if __name__ == "__main__":
         detect(frame)
 
         # display webcam image
-        cv.ShowImage('Camera', frame)
+        cv.ShowImage('Raw', frame)
 
         # handle events
         k = cv.WaitKey(10)
