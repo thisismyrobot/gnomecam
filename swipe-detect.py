@@ -7,38 +7,8 @@
 
 import cv
 
-BACKGROUND = None
 
-def hand(image):
-    image_size = cv.GetSize(image)
-
-    # create grayscale version
-    grayscale = cv.CreateImage(image_size, 8, 1)
-    cv.CvtColor(image, grayscale, cv.CV_BGR2GRAY)
-
-    # create storage
-    storage = cv.CreateMemStorage(0)
-
-    # equalize histogram
-    cv.EqualizeHist(grayscale, grayscale)
-
-    # show processed image
-    cv.ShowImage('Processed', grayscale)
-
-    # detect objects
-    cascade = cv.Load('haarcascade_frontalface_alt.xml')
-    faces = cv.HaarDetectObjects(grayscale, cascade, storage, 1.2, 2, cv.CV_HAAR_DO_CANNY_PRUNING)
-
-    if faces:
-        for i in faces:
-            cv.Rectangle(image,
-                         (i[0][0], i[0][1]),
-                         (i[0][0] + i[0][2], i[0][1] + i[0][3]),
-                         (0, 255, 0),
-                         3,
-                         8,
-                         0)
-
+BACKGROUND_GS = None
 
 if __name__ == "__main__":
 
@@ -55,18 +25,35 @@ if __name__ == "__main__":
     cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
 
     #get background of keyboard
-    if not BACKGROUND:
+    if not BACKGROUND_GS:
+        discard = cv.QueryFrame(capture)
+        import time
+        time.sleep(5)
         BACKGROUND = cv.QueryFrame(capture)
+        image_size = cv.GetSize(BACKGROUND)
+        BACKGROUND_GS = cv.CreateImage(image_size, 8, 1)
+        cv.Flip(BACKGROUND, None, 1)
+        cv.CvtColor(BACKGROUND, BACKGROUND_GS, cv.CV_BGR2GRAY)
+        cv.EqualizeHist(BACKGROUND_GS, BACKGROUND_GS)
 
     while 1:
 
         live = cv.QueryFrame(capture)
+        image_size = cv.GetSize(live)
+        cv.Flip(live, None, 1)
+        live_gs = cv.CreateImage(image_size, 8, 1)
+        cv.CvtColor(live, live_gs, cv.CV_BGR2GRAY)
+        cv.EqualizeHist(live_gs, live_gs)
 
-        cv.ShowImage('Live', live)
+        diff = cv.CreateImage(image_size, 8, 1)
+
+        cv.AbsDiff(live_gs, BACKGROUND_GS, diff)
+
+        cv.Threshold(diff, diff, 150, 255, cv.CV_THRESH_BINARY)
+
+        cv.ShowImage('Live', diff)
 
         # handle events
-        k = cv.WaitKey(10)
-
-        if k == 0x1b: # ESC
-            print 'ESC pressed. Exiting ...'
-            break
+        k = cv.WaitKey(5)
+        
+        import pdb; pdb.set_trace()
