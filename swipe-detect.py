@@ -6,6 +6,7 @@
 #
 
 import cv
+import time
 
 
 def get_img(capture):
@@ -23,17 +24,17 @@ def get_hands(image):
     hands = cv.CreateImage(size, 8, 1)
     cv.CvtColor(image, hsv, cv.CV_BGR2HSV)
     cv.Split(hsv, hue, sat, val, None);
-    return val
 
-def get_diff(image1, image2):
-    """ Returns the diff. """
-    size = cv.GetSize(image)
-    diff = cv.CreateImage(size, 8, 1)
-    cv.AbsDiff(image1, image2, diff)
-    cv.Threshold(diff, diff, 100, 255, cv.CV_THRESH_BINARY)
-    cv.Smooth(diff, diff, smoothtype=cv.CV_GAUSSIAN, param1=13, param2=13)
-    cv.Threshold(diff, diff, 100, 255, cv.CV_THRESH_BINARY)
-    return diff
+    cv.Threshold(hue, hue, 10, 255, cv.CV_THRESH_TOZERO) #set to 0 if <= 10, otherwise leave as is
+    cv.Threshold(hue, hue, 244, 255, cv.CV_THRESH_TOZERO_INV) #set to 0 if > 244, otherwise leave as is
+    cv.Threshold(hue, hue, 0, 255, cv.CV_THRESH_BINARY_INV) #set to 255 if = 0, otherwise 0
+    cv.Threshold(sat, sat, 32, 255, cv.CV_THRESH_BINARY) #set to 255 if > 64, otherwise 0
+    cv.Mul(hue, sat, hue)
+
+    #smooth + threshold to filter noise
+    cv.Smooth(hue, hue, smoothtype=cv.CV_GAUSSIAN, param1=13, param2=13)
+    cv.Threshold(hue, hue, 100, 255, cv.CV_THRESH_BINARY)
+    return hue
 
 if __name__ == "__main__":
 
@@ -46,16 +47,12 @@ if __name__ == "__main__":
     cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH, 320)
     cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
 
-    bg = get_hands(get_img(capture))
-
     while 1:
         image = get_img(capture)
         hands = get_hands(image)
-        valdiff = get_diff(bg, hands)
 
         cv.ShowImage('Live', image)
-        cv.ShowImage('Value', hands)
-        cv.ShowImage('Value Diff', valdiff)
+        cv.ShowImage('Hands', hands)
 
         # handle events
         k = cv.WaitKey(5)
