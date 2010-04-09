@@ -28,7 +28,7 @@ def get_hands(image):
     cv.Threshold(hue, hue, 10, 255, cv.CV_THRESH_TOZERO) #set to 0 if <= 10, otherwise leave as is
     cv.Threshold(hue, hue, 244, 255, cv.CV_THRESH_TOZERO_INV) #set to 0 if > 244, otherwise leave as is
     cv.Threshold(hue, hue, 0, 255, cv.CV_THRESH_BINARY_INV) #set to 255 if = 0, otherwise 0
-    cv.Threshold(sat, sat, 32, 255, cv.CV_THRESH_BINARY) #set to 255 if > 64, otherwise 0
+    cv.Threshold(sat, sat, 64, 255, cv.CV_THRESH_BINARY) #set to 255 if > 64, otherwise 0
     cv.Mul(hue, sat, hue)
 
     #smooth + threshold to filter noise
