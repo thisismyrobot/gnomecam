@@ -25,15 +25,26 @@ def get_hands(image):
     cv.CvtColor(image, hsv, cv.CV_BGR2HSV)
     cv.Split(hsv, hue, sat, val, None);
 
+    cv.ShowImage('Live', image)
+    cv.ShowImage('Hue', hue)
+    cv.ShowImage('Saturation', sat)
+
     cv.Threshold(hue, hue, 10, 255, cv.CV_THRESH_TOZERO) #set to 0 if <= 10, otherwise leave as is
     cv.Threshold(hue, hue, 244, 255, cv.CV_THRESH_TOZERO_INV) #set to 0 if > 244, otherwise leave as is
     cv.Threshold(hue, hue, 0, 255, cv.CV_THRESH_BINARY_INV) #set to 255 if = 0, otherwise 0
     cv.Threshold(sat, sat, 64, 255, cv.CV_THRESH_BINARY) #set to 255 if > 64, otherwise 0
+
+    cv.ShowImage('Hue threshold', hue)
+    cv.ShowImage('Saturation threshold', sat)
+
     cv.Mul(hue, sat, hue)
 
     #smooth + threshold to filter noise
-    cv.Smooth(hue, hue, smoothtype=cv.CV_GAUSSIAN, param1=13, param2=13)
-    cv.Threshold(hue, hue, 100, 255, cv.CV_THRESH_BINARY)
+#    cv.Smooth(hue, hue, smoothtype=cv.CV_GAUSSIAN, param1=13, param2=13)
+#    cv.Threshold(hue, hue, 100, 255, cv.CV_THRESH_BINARY)
+
+    cv.ShowImage('Hands', hue)
+
     return hue
 
 if __name__ == "__main__":
@@ -50,9 +61,6 @@ if __name__ == "__main__":
     while 1:
         image = get_img(capture)
         hands = get_hands(image)
-
-        cv.ShowImage('Live', image)
-        cv.ShowImage('Hands', hands)
 
         # handle events
         k = cv.WaitKey(5)
