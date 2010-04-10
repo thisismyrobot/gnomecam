@@ -1,6 +1,5 @@
 #
-# Detection of cross-keyboard swipe motion to trigger Alt-Tab and Shift-Alt-Tab
-# for window selection.
+# Hand detection
 #
 # Requires OpenCV 2.0 and Python 2.6
 #
