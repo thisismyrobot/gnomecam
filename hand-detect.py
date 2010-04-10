@@ -34,7 +34,6 @@ def get_hands(image):
     cv.Threshold(hue, hue, 0, 255, cv.CV_THRESH_BINARY_INV) #set to 255 if = 0, otherwise 0
     cv.Threshold(sat, sat, 64, 255, cv.CV_THRESH_TOZERO) #set to 0 if <= 64, otherwise leave as is
     cv.EqualizeHist(sat, sat)
-#    cv.ShowImage('Saturation with equalised histogram', sat)
 
     cv.Threshold(sat, sat, 64, 255, cv.CV_THRESH_BINARY) #set to 0 if <= 64, otherwise 255
 
