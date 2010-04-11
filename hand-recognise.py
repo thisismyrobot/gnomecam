@@ -10,6 +10,8 @@
 import cv
 
 
+HORIZPOS = None
+
 def get_img(capture):
     img = cv.QueryFrame(capture)
     return img
@@ -29,6 +31,38 @@ def get_diff(old, new):
     cv.Smooth(diff, diff, smoothtype=cv.CV_GAUSSIAN, param1=13, param2=13)
     cv.Threshold(diff, diff, 200, 255, cv.CV_THRESH_BINARY)
     return diff
+
+def add_rect(display, rect):
+    """ Filters discovered rectangles to isolate hand swipes.
+    """
+    global HORIZPOS
+
+    rect = list(rect)
+
+    #if either dimension is tiny, don't draw
+    if rect[2] < 10 or rect[3] < 10:
+        return
+
+    #compensate for the actual movement
+    if not HORIZPOS:
+        HORIZPOS = rect[0] + (float(rect[2])/2)
+    else:
+        offset = HORIZPOS - (rect[0] + (float(rect[2])/2))
+        HORIZPOS = rect[0] + (float(rect[2])/2)
+        rect[2] = rect[2] - abs(offset) #decrease the width by the movement
+        rect[0] = rect[0] + (-offset/2) #offset by half the movement
+
+    #if width > 1/2 height, don't draw
+    if rect[2] * 2 > rect[3]:
+        return
+
+    cv.Rectangle(display,
+                 (rect[0], rect[1]),
+                 (rect[0] + rect[2], rect[1] + rect[3]),
+                 (255, 0, 0),
+                 3,
+                 8,
+                 0)
 
 if __name__ == "__main__":
     #set up connection to camera
@@ -51,13 +85,8 @@ if __name__ == "__main__":
 
         display = cv.CreateImage(size, 8, 3)
         cv.Copy(new, display)
-        cv.Rectangle(display,
-                     (rect[0], rect[1]),
-                     (rect[0] + rect[2], rect[1] + rect[3]),
-                     (0, 255, 0),
-                     3,
-                     8,
-                     0)
+
+        add_rect(display, rect)
         cv.ShowImage('Diff', display)
 
         # handle events, alow windows to refresh
