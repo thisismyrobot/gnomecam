@@ -47,7 +47,18 @@ if __name__ == "__main__":
     while 1:
         new = get_img(capture)
         diff = get_diff(old, new)
-        cv.ShowImage('Diff', diff)
+        rect = cv.BoundingRect(diff)
+
+        display = cv.CreateImage(size, 8, 3)
+        cv.Copy(new, display)
+        cv.Rectangle(display,
+                     (rect[0], rect[1]),
+                     (rect[0] + rect[2], rect[1] + rect[3]),
+                     (0, 255, 0),
+                     3,
+                     8,
+                     0)
+        cv.ShowImage('Diff', display)
 
         # handle events, alow windows to refresh
         k = cv.WaitKey(5)
